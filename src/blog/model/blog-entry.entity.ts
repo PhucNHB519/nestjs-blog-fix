@@ -2,7 +2,7 @@ import { UserEntity } from "src/user/models/user.entity";
 import { BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 
-@Entity('blog-entry')
+@Entity('blog_entry')
 export class BlogEntryEntity {
 
     @PrimaryGeneratedColumn()
@@ -34,13 +34,13 @@ export class BlogEntryEntity {
     @Column({ default: 0 })
     likes: number;
 
-    @Column()
+    @Column({ nullable: true })
     headerImage: string;
 
-    @Column()
+    @Column({ nullable: true })
     publishedDate: Date;
 
-    @Column()
+    @Column({ default: true })
     isPublished: boolean;
 
     @ManyToOne(type => UserEntity, user => user.blogEntries)

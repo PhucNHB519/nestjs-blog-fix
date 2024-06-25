@@ -68,10 +68,10 @@ export class UserService {
         return from(this.userRepository.findAndCount({
             skip: Number(options.page) * Number(options.limit) || 0,
             take: Number(options.limit) || 10,
-            order: {id: "ASC"},
+            order: { id: "ASC" },
             select: ['id', 'name', 'username', 'email', 'role'],
             where: [
-                { username: Like(`%${user.username}%`)}
+                { username: Like(`%${user.username}%`) }
             ]
         })).pipe(
             map(([users, totalUsers]) => {
@@ -90,59 +90,74 @@ export class UserService {
                         totalItems: totalUsers,
                         totalPages: Math.ceil(totalUsers / Number(options.limit))
                     }
-                };              
+                };
                 return usersPageable;
             })
         )
-    }   
+    }
 
 
-deleteOne(id: number): Observable < any > {
-    return from(this.userRepository.delete(id));
-}
+    deleteOne(id: number): Observable<any> {
+        return from(this.userRepository.delete(id));
+    }
 
-updateOne(id: number, user: User): Observable < any > {
-    delete user.email;
-    delete user.password;
-    delete user.role;
+    updateOne(id: number, user: User): Observable<any> {
+        delete user.email;
+        delete user.password;
+        delete user.role;
 
-    return from(this.userRepository.update(id, user)).pipe(
-        switchMap(() => this.findOne(id))
-    );
-}
+        return from(this.userRepository.update(id, user)).pipe(
+            switchMap(() => this.findOne(id))
+        );
+    }
 
-updateRoleOfUser(id: number, user: User): Observable < any > {
-    return from(this.userRepository.update(id, user));
-}
+    updateRoleOfUser(id: number, user: User): Observable<any> {
+        return from(this.userRepository.update(id, user));
+    }
 
-login(user: User): Observable < string > {
-    return this.validateUser(user.email, user.password).pipe(
-        switchMap((user: User) => {
-            if (user) {
-                return this.authService.generateJwt(user).pipe(map((jwt: string) => jwt));
-            } else {
-                return 'Wrong credentials';
-            }
-        })
-    )
-}
-
-validateUser(email: string, password: string): Observable < User > {
-    return this.findByMail(email).pipe(
-        switchMap((user: User) => this.authService.comparePassword(password, user.password).pipe(
-            map((match: boolean) => {
-                if (match) {
-                    const { password, ...result } = user;
-                    return result;
+    login(user: User): Observable<string> {
+        return this.validateUser(user.email, user.password).pipe(
+            switchMap((user: User) => {
+                if (user) {
+                    return this.authService.generateJwt(user).pipe(map((jwt: string) => jwt));
                 } else {
-                    throw Error;
+                    return 'Wrong credentials';
                 }
             })
-        ))
-    )
-}
+        )
+    }
 
-findByMail(email: string): Observable < User | undefined > {
-    return from(this.userRepository.findOneBy({ email }));
-}
+    // validateUser(email: string, password: string): Observable < User > {
+    //     return this.findByMail(email).pipe(
+    //         switchMap((user: User) => this.authService.comparePassword(password, user.password).pipe(
+    //             map((match: boolean) => {
+    //                 if (match) {
+    //                     const { password, ...result } = user;
+    //                     return result;
+    //                 } else {
+    //                     throw Error;
+    //                 }
+    //             })
+    //         ))
+    //     )
+    // }
+
+    validateUser(email: string, password: string): Observable<User> {
+        return from(this.userRepository.findOne({ where: { email: email }, select: ['id', 'password', 'name', 'username', 'email', 'role', 'profileImg',] })).pipe(
+            switchMap((user: User) => this.authService.comparePassword(password, user.password).pipe(
+                map((match: boolean) => {
+                    if (match) {
+                        const { password, ...result } = user;
+                        return result;
+                    } else {
+                        throw Error;
+                    }
+                })
+            ))
+        )
+    }
+
+    findByMail(email: string): Observable<User | undefined> {
+        return from(this.userRepository.findOneBy({ email }));
+    }
 }
