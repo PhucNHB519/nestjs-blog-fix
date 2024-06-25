@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { BlogModule } from './blog/blog.module';
 
 
 @Module({
@@ -29,7 +30,8 @@ import { MulterModule } from '@nestjs/platform-express';
     }),
     UserModule,
     AuthModule,
-    MulterModule
+    MulterModule,
+    BlogModule
     ],
   controllers: [AppController],
   providers: [AppService],
