@@ -48,6 +48,12 @@ export class BlogService {
         })).pipe(map((blogEntries: BlogEntry[]) => blogEntries))
     }
 
+    updateOne(id: number, blogEntry: BlogEntry): Observable<BlogEntry> {
+        return from(this.blogRepository.update(id, blogEntry)).pipe(
+            switchMap(() => this.findOne(id))
+        )
+    }
+
     generateSlug(title: string): Observable<string> {
         return of(slugify(title));
     }

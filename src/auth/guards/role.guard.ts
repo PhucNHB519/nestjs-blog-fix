@@ -22,12 +22,12 @@ export class RolesGuard implements CanActivate {
         return this.userService.findOne(user.id).pipe(
             map((user: User) => {
                 const hasRole = () => roles.indexOf(user.role) > -1;
-                let hasPerrmission: boolean = false;
+                let hasPermission: boolean = false;
 
                 if(hasRole()) {
-                    hasPerrmission = true;
+                    hasPermission = true;
                 }
-                return user && hasPerrmission;
+                return user && hasPermission;
             })
         )
     }

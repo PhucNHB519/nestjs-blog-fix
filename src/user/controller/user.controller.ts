@@ -1,8 +1,8 @@
 import { Body, Controller, DefaultValuePipe, Delete, Get, Param, Post, Put, Query, UploadedFile, UseGuards, UseInterceptors, Request, Res } from '@nestjs/common';
 import { UserService } from '../service/user.service';
-import { User } from '../models/user.interface';
+import { User, UserRole } from '../models/user.interface';
 import { Observable, catchError, map, of, tap } from 'rxjs';
-import { hasRole } from 'src/auth/decorators/roles.decorators';
+import { hasRoles } from 'src/auth/decorators/roles.decorators';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
 import { RolesGuard } from 'src/auth/guards/role.guard';
 import { Pagination } from 'nestjs-typeorm-paginate';
@@ -68,13 +68,15 @@ export class UserController {
 
     }
 
-    @hasRole('Admin')
+    @hasRoles(UserRole.ADMIN)
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Get()
     findAll(): Observable<User[]> {
         return this.userService.findAll();
     }
 
+    @hasRoles(UserRole.ADMIN)
+    @UseGuards(JwtAuthGuard, RolesGuard)
     @Delete(':id')
     deleteOne(@Param('id') id: string): Observable<User> {
         return this.userService.deleteOne(Number(id));
@@ -87,7 +89,7 @@ export class UserController {
     }
 
 
-    @hasRole('Admin')
+    @hasRoles('Admin')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Put(':id/role')
     updateRoleOfUser(@Param('id') id: string, @Body() user: User): Observable<User> {
@@ -98,7 +100,7 @@ export class UserController {
     @Post('upload')
     @UseInterceptors(FileInterceptor('file', storage))
     uploadFile(@UploadedFile() file, @Request() req): Observable<Object> {
-        const user: User = req.user.user;
+        const user: User = req.user;
         return this.userService.updateOne(user.id, { profileImg: file.filename }).pipe(
             tap((user: User) => console.log(user)),
             map((user: User) => ({ profileImg: user.profileImg }))
