@@ -14,7 +14,7 @@ import { UserIsUserGuard } from 'src/auth/guards/UserIsUser.guard';
 
 export const storage = {
     storage: diskStorage({
-        destination: './uploads/profileimages',
+        destination: './uploads/profile-images',
         fileName: (req, file, cb) => {
             const fileName: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
             const extension: string = path.parse(file.originalname).ext;

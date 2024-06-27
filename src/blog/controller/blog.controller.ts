@@ -1,12 +1,26 @@
-import { Body, Controller, Get, Param, Post, Put, Query, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, Request, Res, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { BlogService } from '../service/blog.service';
 import { BlogEntry } from '../model/blog-entry.interface';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-guard';
-import { BlogEntryEntity } from '../model/blog-entry.entity';
 import { UserIsAuthorGuard } from '../guards/user-is-author.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { v4 as uuidv4 } from 'uuid';
+import path, { join } from 'path';
+import { Image } from '../model/image.interface';
 
 export const BLOG_ENTRIES_URL = 'http://localhost:3000/blogs';
+export const storage = {
+    storage: diskStorage({
+        destination: './uploads/blog-entry-images',
+        fileName: (req, file, cb) => {
+            const fileName: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
+            const extension: string = path.parse(file.originalname).ext;
+            cb(null, `${fileName}${extension}`)
+        }
+    })
+}
 
 @Controller('blogs')
 export class BlogController {
@@ -67,5 +81,17 @@ export class BlogController {
     @Put(':id')
     updateOne(@Param('id') id: number, @Body() blogEntry: BlogEntry): Observable<BlogEntry> {
         return this.blogService.updateOne(Number(id), blogEntry);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('image/upload')
+    @UseInterceptors(FileInterceptor('file', storage))
+    uploadFile(@UploadedFile() file, @Request() req): Observable<Image> {
+        return of(file);
+    }
+
+    @Get('image/:imagename')
+    findProfileImage(@Param('imagename') imagename, @Res() res): Observable<Object> {
+        return of(res.sendFile(join(process.cwd(), 'uploads/blog-entry-images' + imagename)))
     }
 }
