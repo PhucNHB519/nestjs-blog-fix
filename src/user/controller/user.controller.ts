@@ -15,10 +15,8 @@ import { UserIsUserGuard } from 'src/auth/guards/UserIsUser.guard';
 export const storage = {
     storage: diskStorage({
         destination: './uploads/profile-images',
-        fileName: (req, file, cb) => {
-            const fileName: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
-            const extension: string = path.parse(file.originalname).ext;
-            cb(null, `${fileName}${extension}`)
+        filename: (req, file, cb) => {
+            cb(null, file.originalname);
         }
     })
 }
@@ -103,6 +101,7 @@ export class UserController {
         const user: User = req.user;
         return this.userService.updateOne(user.id, { profileImg: file.filename }).pipe(
             tap((user: User) => console.log(user)),
+            tap(() =>console.log(file.filename)),
             map((user: User) => ({ profileImg: user.profileImg }))
         )
 
@@ -111,7 +110,7 @@ export class UserController {
 
     @Get('profile-image/:imagename')
     findProfileImage(@Param('imagename') imagename, @Res() res): Observable<Object> {
-        return of(res.sendFile(join(process.cwd(), 'uploads/profileimages' + imagename)))
+        return of(res.sendFile(join(process.cwd(), 'uploads/profile-images' + imagename)))
     }
 
 }

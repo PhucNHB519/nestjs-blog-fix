@@ -14,10 +14,8 @@ export const BLOG_ENTRIES_URL = 'http://localhost:3000/blogs';
 export const storage = {
     storage: diskStorage({
         destination: './uploads/blog-entry-images',
-        fileName: (req, file, cb) => {
-            const fileName: string = path.parse(file.originalname).name.replace(/\s/g, '') + uuidv4();
-            const extension: string = path.parse(file.originalname).ext;
-            cb(null, `${fileName}${extension}`)
+        filename: (req, file, cb) => {
+            cb(null, file.originalname);
         }
     })
 }
@@ -92,6 +90,6 @@ export class BlogController {
 
     @Get('image/:imagename')
     findProfileImage(@Param('imagename') imagename, @Res() res): Observable<Object> {
-        return of(res.sendFile(join(process.cwd(), 'uploads/blog-entry-images' + imagename)))
+        return of(res.sendFile(join(process.cwd(), 'uploads/blog-entry-images/' + imagename)))
     }
 }
