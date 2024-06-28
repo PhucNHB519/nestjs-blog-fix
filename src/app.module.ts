@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { BlogModule } from './blog/blog.module';
+import { ReactionModule } from './reaction/reaction.module';
 
 
 @Module({
@@ -31,7 +32,8 @@ import { BlogModule } from './blog/blog.module';
     UserModule,
     AuthModule,
     MulterModule,
-    BlogModule
+    BlogModule,
+    ReactionModule
     ],
   controllers: [AppController],
   providers: [AppService],

@@ -37,7 +37,7 @@ export class UserService {
     }
 
     findOne(id: number): Observable<User | undefined> {
-        return from(this.userRepository.findOneBy({ id })).pipe(
+        return from(this.userRepository.findOne({ where: { id: id } })).pipe(
             map((user: User) => {
                 const { password, ...result } = user;
                 return result;

@@ -30,9 +30,9 @@ export class BlogService {
     findOne(id: number): Observable<BlogEntry> {
         return from(this.blogRepository.findOne({
             where: {
-                author: { id: id }
+                id : id
             },
-            relations: ['author']
+            relations: ['author']   
         }));
     }
 

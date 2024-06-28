@@ -1,5 +1,6 @@
+import { ReactionEntity } from "src/reaction/models/reaction.entity";
 import { UserEntity } from "src/user/models/user.entity";
-import { BeforeUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
 
 @Entity('blog_entry')
@@ -45,5 +46,8 @@ export class BlogEntryEntity {
 
     @ManyToOne(type => UserEntity, user => user.blogEntries)
     author: UserEntity;
+
+    @OneToMany(type => ReactionEntity, reactionEntity => reactionEntity.reactedBlog)
+    reaction: ReactionEntity[];
 
 }

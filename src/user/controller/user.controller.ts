@@ -101,7 +101,6 @@ export class UserController {
         const user: User = req.user;
         return this.userService.updateOne(user.id, { profileImg: file.filename }).pipe(
             tap((user: User) => console.log(user)),
-            tap(() =>console.log(file.filename)),
             map((user: User) => ({ profileImg: user.profileImg }))
         )
 

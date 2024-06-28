@@ -1,6 +1,7 @@
 import { BeforeInsert, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { UserRole } from "./user.interface";
 import { BlogEntryEntity } from "src/blog/model/blog-entry.entity";
+import { ReactionEntity } from "src/reaction/models/reaction.entity";
 
 @Entity()
 export class UserEntity {
@@ -12,7 +13,7 @@ export class UserEntity {
 
     @Column({ unique: true })
     username: string;
-
+    
     @Column()
     email: string;
 
@@ -32,4 +33,7 @@ export class UserEntity {
     emailToLowerCase() {
         this.email = this.email.toLowerCase();
     }
+
+    @OneToMany(type => ReactionEntity, reactionEntity => reactionEntity.reactedUser)
+    reaction: ReactionEntity[];
 }
